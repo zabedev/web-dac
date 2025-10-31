@@ -8,7 +8,8 @@ const model = ref([
         label: `${import.meta.VITE_APP_NAME}`,
         items: [
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-            { label: 'Fontes de dados', icon: 'pi pi-fw pi-database', to: '/sources' }
+            { label: 'Fontes de dados', icon: 'pi pi-fw pi-database', to: '/sources' },
+            { label: 'Configurações', icon: 'pi pi-fw pi-cog', to: '/settings' }
         ]
     },
 

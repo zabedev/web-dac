@@ -13,7 +13,7 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'dashboard',
-                    component: () => import('@/modules/dash/dash.vue'),
+                    component: () => import('@/modules/dash/sources.vue'),
                     meta: { title: 'Dashboard' },
                 },
                 {
@@ -21,6 +21,12 @@ const router = createRouter({
                     name: 'sources',
                     component: () => import('@/modules/dash/sources.vue'),
                     meta: { title: 'Fontes de dados' },
+                },
+                {
+                    path: 'settings',
+                    name: 'settings',
+                    component: () => import('@/modules/dash/Settings.vue'),
+                    meta: { title: 'Configurações' },
                 },
             ],
         },

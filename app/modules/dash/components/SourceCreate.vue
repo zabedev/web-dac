@@ -118,7 +118,8 @@ async function saveSource() {
 onMounted(() => {
     if (!source.meta.convert) {
         source.meta.convert = {
-            type: 'false',
+            isActive: false,
+            type: 'automatic',
             input_min: 0,
             input_max: 0,
             output_min: 0,
@@ -136,11 +137,14 @@ onMounted(() => {
                 <Button icon="pi pi-save" label="Salvar" severity="secondary" v-on:click="saveSource" />
             </div>
             <div class="flex gap-2">
-                <Button icon="pi pi-file-export" v-if="source.id" label="Exportar" severity="secondary" v-on:click="exportSource" />
-                <Button icon="pi pi-file-import" v-if="!source.id" label="Importar" severity="secondary" v-on:click="importSource" />
+                <Button icon="pi pi-file-export" v-if="source.id" label="Exportar" severity="secondary"
+                    v-on:click="exportSource" />
+                <Button icon="pi pi-file-import" v-if="!source.id" label="Importar" severity="secondary"
+                    v-on:click="importSource" />
             </div>
 
-            <Button icon="pi pi-trash" v-if="source.id" label="Deletar" severity="secondary" v-on:click="deleteSource" />
+            <Button icon="pi pi-trash" v-if="source.id" label="Deletar" severity="secondary"
+                v-on:click="deleteSource" />
         </div>
         <Tabs v-model:value="activeTab">
             <TabList>
@@ -174,19 +178,23 @@ onMounted(() => {
                                     <span class="text-left">Tipo de Fonte</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <Select v-model="source.meta.kind" :options="sourceTypes" option-label="label" option-value="value" />
+                                    <Select v-model="source.meta.kind" :options="sourceTypes" option-label="label"
+                                        option-value="value" />
                                 </div>
                             </div>
                             <!--  -->
                         </div>
-                        <div v-if="source.meta.kind === 'modbus-tcp'" class="flex flex-col gap-4 border-b dark:border-b-surface-700 pb-4">
+                        <div v-if="source.meta.kind === 'modbus-tcp'"
+                            class="flex flex-col gap-4 border-b dark:border-b-surface-700 pb-4">
                             <!--  -->
                             <div class="grid grid-cols-3">
                                 <div class="col-span-1 items-center flex">
                                     <span class="text-left">Slave</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <input-number v-model="source.meta.unitId" :min="slaveLimits.min" :max="slaveLimits.max" v-tooltip.bottom="`Min: ${slaveLimits.min} | Max: ${slaveLimits.max}`" />
+                                    <input-number v-model="source.meta.unitId" :min="slaveLimits.min"
+                                        :max="slaveLimits.max"
+                                        v-tooltip.bottom="`Min: ${slaveLimits.min} | Max: ${slaveLimits.max}`" />
                                 </div>
                             </div>
                             <!--  -->
@@ -195,7 +203,8 @@ onMounted(() => {
                                     <span class="text-left">Função Modbus</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <Select v-model="source.meta.modbusFunction" :options="modbusFunctions" option-label="label" option-value="value" />
+                                    <Select v-model="source.meta.modbusFunction" :options="modbusFunctions"
+                                        option-label="label" option-value="value" />
                                 </div>
                             </div>
                             <!--  -->
@@ -204,7 +213,9 @@ onMounted(() => {
                                     <span class="text-left">Endereço</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <input-number v-model="source.meta.dataAddress" :min="addressLimits.min" :max="addressLimits.max" v-tooltip.bottom="`Min: ${addressLimits.min} | Max: ${addressLimits.max}`" />
+                                    <input-number v-model="source.meta.dataAddress" :min="addressLimits.min"
+                                        :max="addressLimits.max"
+                                        v-tooltip.bottom="`Min: ${addressLimits.min} | Max: ${addressLimits.max}`" />
                                 </div>
                             </div>
                             <!--  -->
@@ -213,7 +224,9 @@ onMounted(() => {
                                     <span class="text-left">Quantidade</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <input-number v-model="source.meta.lengthAddress" :min="1" :max="modbusLimits[source.meta.modbusFunction] || 1" v-tooltip.bottom="`Min: 1 | Max: ${modbusLimits[source.meta.modbusFunction] || 1}`" />
+                                    <input-number v-model="source.meta.lengthAddress" :min="1"
+                                        :max="modbusLimits[source.meta.modbusFunction] || 1"
+                                        v-tooltip.bottom="`Min: 1 | Max: ${modbusLimits[source.meta.modbusFunction] || 1}`" />
                                 </div>
                             </div>
 
@@ -223,7 +236,8 @@ onMounted(() => {
                                     <span class="text-left">Formato dos dados</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <Select v-model="source.meta.format" :options="modbusFormatOptions" option-label="label" option-value="value" />
+                                    <Select v-model="source.meta.format" :options="modbusFormatOptions"
+                                        option-label="label" option-value="value" />
                                 </div>
                             </div>
                             <!--  -->
@@ -235,7 +249,8 @@ onMounted(() => {
                                 </div>
                                 <div class="col-span-2 flex gap-3 w-full">
                                     <toggle-switch v-model="source.meta.swapBytes" binary />
-                                    <span class="text-sm text-gray-500 text-left"> Ex.: [0x12, 0x34] → [0x34, 0x12] </span>
+                                    <span class="text-sm text-gray-500 text-left"> Ex.: [0x12, 0x34] → [0x34, 0x12]
+                                    </span>
                                 </div>
                             </div>
 
@@ -247,11 +262,13 @@ onMounted(() => {
                                 </div>
                                 <div class="col-span-2 flex gap-3 w-full">
                                     <toggle-switch v-model="source.meta.swapWords" binary />
-                                    <span class="text-sm text-gray-500 w-full"> Ex.: Para um valor float32, [reg1, reg2] → [reg2, reg1] </span>
+                                    <span class="text-sm text-gray-500 w-full"> Ex.: Para um valor float32, [reg1, reg2]
+                                        → [reg2, reg1] </span>
                                 </div>
                             </div>
                         </div>
-                        <div v-if="source.meta.kind === 'http'" class="flex flex-col gap-4 border-b dark:border-b-surface-700 pb-4"></div>
+                        <div v-if="source.meta.kind === 'http'"
+                            class="flex flex-col gap-4 border-b dark:border-b-surface-700 pb-4"></div>
                         <div class="flex flex-col gap-4 border-b dark:border-b-surface-700 pb-4">
                             <!--  -->
                             <div class="grid grid-cols-3">
@@ -259,8 +276,11 @@ onMounted(() => {
                                     <span class="text-left">Intervalo(s)</span>
                                 </div>
                                 <div class="col-span-2 flex flex-col w-full">
-                                    <input-number v-model="source.schedulerInterval" :min="intervalLimits.min" :max="intervalLimits.max" v-tooltip.bottom="`Min: ${intervalLimits.min} | Max: ${intervalLimits.max}`" />
-                                    <Message severity="secondary" size="small" variant="simple"> Tempo (em segundos) entre cada leitura. </Message>
+                                    <input-number v-model="source.schedulerInterval" :min="intervalLimits.min"
+                                        :max="intervalLimits.max"
+                                        v-tooltip.bottom="`Min: ${intervalLimits.min} | Max: ${intervalLimits.max}`" />
+                                    <Message severity="secondary" size="small" variant="simple"> Tempo (em segundos)
+                                        entre cada leitura. </Message>
                                 </div>
                             </div>
                             <!--  -->
@@ -287,10 +307,12 @@ onMounted(() => {
                                     <span class="text-left">Servidor</span>
                                 </div>
                                 <div class="col-span-2 flex w-full gap-3">
-                                    <Select v-model="source.serverCode" :options="optionsServers" option-label="label" option-value="value" class="col-span-2 w-full" />
+                                    <Select v-model="source.serverCode" :options="optionsServers" option-label="label"
+                                        option-value="value" class="col-span-2 w-full" />
                                     <div class="flex col-span-1 gap-2">
                                         <Button icon="pi pi-plus" outlined v-on:click="newServer" />
-                                        <Button :disabled="!source.serverCode" icon="pi pi-pencil" outlined v-on:click="openServer({ serverCode: source.serverCode })" />
+                                        <Button :disabled="!source.serverCode" icon="pi pi-pencil" outlined
+                                            v-on:click="openServer({ serverCode: source.serverCode })" />
                                     </div>
                                 </div>
                             </div>
@@ -333,38 +355,56 @@ onMounted(() => {
                                     </div>
                                 </div>
 
-                                <div v-if="source.meta.convert && source.meta.convert.isActive && source.meta.convert.type === 'automatic'" class="flex flex-col gap-1 mb-3">
+                                <div v-if="source.meta.convert && source.meta.convert.isActive && source.meta.convert.type === 'automatic'"
+                                    class="flex flex-col gap-1 mb-3">
                                     <div class="font-semibold text-muted-color text-md">Converter Unidade medida</div>
                                     <div class="flex flex-col md:flex-row md:justify-between gap-2 p-4">
                                         <div class="font-semibold text-muted-color text-md">de</div>
-                                        <Select filter  :filter-fields="['label', 'value']" filter-icon="pi pi-filter" size="small" id="protocol.unit_input" v-model="source.meta.convert.unitInput" class="w-full mb-4" :options="measurementUnits" option-label="label" option-value="value" />
+                                        <Select filter :filter-fields="['label', 'value']" filter-icon="pi pi-filter"
+                                            size="small" id="protocol.unit_input"
+                                            v-model="source.meta.convert.unitInput" class="w-full mb-4"
+                                            :options="measurementUnits" option-label="label" option-value="value" />
                                         <div class="font-semibold text-muted-color text-md">para</div>
-                                        <Select filter :filter-fields="['label', 'value']" filter-icon="pi pi-filter" size="small" id="protocol.unit_output" v-model="source.meta.convert.unitOutput" class="w-full mb-4" :options="measurementUnits" option-label="label" option-value="value" />
+                                        <Select filter :filter-fields="['label', 'value']" filter-icon="pi pi-filter"
+                                            size="small" id="protocol.unit_output"
+                                            v-model="source.meta.convert.unitOutput" class="w-full mb-4"
+                                            :options="measurementUnits" option-label="label" option-value="value" />
                                     </div>
                                 </div>
 
-                                <div v-if="source.meta.convert && source.meta.convert.isActive && source.meta.convert.type === 'manually'" class="flex flex-col gap-1 mb-3">
+                                <div v-if="source.meta.convert && source.meta.convert.isActive && source.meta.convert.type === 'manually'"
+                                    class="flex flex-col gap-1 mb-3">
                                     <div class="font-semibold text-muted-color text-md">Linearizador</div>
 
                                     <div class="grid grid-cols-2 gap-2">
                                         <div class="col-span-2 grid grid-cols-4 gap-2">
                                             <div class="flex flex-col gap-1 col-span-2">
                                                 <label class="text-sm" for="protocol.initialReading">Leitura</label>
-                                                <InputNumber size="small" v-model="source.meta.convert.inputMin" class="w-full" placeholder="Valor inicial" mode="decimal" :step="0.01" showButtons />
+                                                <InputNumber size="small" v-model="source.meta.convert.inputMin"
+                                                    class="w-full" placeholder="Valor inicial" mode="decimal"
+                                                    :step="0.01" showButtons />
                                             </div>
                                             <div class="flex flex-col gap-1 col-span-2">
                                                 <label class="text-sm" for="protocol.finalReading">Referência</label>
-                                                <InputNumber size="small" v-model="source.meta.convert.outputMin" class="w-full" placeholder="Valor final" mode="decimal" :step="0.01" showButtons />
+                                                <InputNumber size="small" v-model="source.meta.convert.outputMin"
+                                                    class="w-full" placeholder="Valor final" mode="decimal" :step="0.01"
+                                                    showButtons />
                                             </div>
                                         </div>
                                         <div class="col-span-2 grid grid-cols-4 gap-2">
                                             <div class="flex flex-col gap-1 col-span-2">
-                                                <label class="text-sm" for="protocol.initialReference">Leitura Máxima</label>
-                                                <InputNumber size="small" v-model="source.meta.convert.inputMax" class="w-full" placeholder="Valor inicial da referência" mode="decimal" :step="0.01" showButtons />
+                                                <label class="text-sm" for="protocol.initialReference">Leitura
+                                                    Máxima</label>
+                                                <InputNumber size="small" v-model="source.meta.convert.inputMax"
+                                                    class="w-full" placeholder="Valor inicial da referência"
+                                                    mode="decimal" :step="0.01" showButtons />
                                             </div>
                                             <div class="flex flex-col gap-1 col-span-2">
-                                                <label class="text-sm" for="protocol.finalReference">Referência Máxima</label>
-                                                <InputNumber size="small" v-model="source.meta.convert.outputMax" class="w-full" placeholder="Valor final da referência" mode="decimal" :step="0.01" showButtons />
+                                                <label class="text-sm" for="protocol.finalReference">Referência
+                                                    Máxima</label>
+                                                <InputNumber size="small" v-model="source.meta.convert.outputMax"
+                                                    class="w-full" placeholder="Valor final da referência"
+                                                    mode="decimal" :step="0.01" showButtons />
                                             </div>
                                         </div>
                                     </div>
@@ -375,7 +415,8 @@ onMounted(() => {
                 </TabPanel>
             </TabPanels>
         </Tabs>
-        <Drawer v-model:visible="visibleServer" header="Servidor" position="right" class="!w-full md:!w-[40rem] lg:!w-[45rem]">
+        <Drawer v-model:visible="visibleServer" header="Servidor" position="right"
+            class="!w-full md:!w-[40rem] lg:!w-[45rem]">
             <template #container="{ closeCallback }">
                 <server-create :code="serverSelectd" @close-modal-server="handleSourceClose" />
             </template>

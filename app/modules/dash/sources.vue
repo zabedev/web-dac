@@ -1,8 +1,8 @@
 <script setup>
 import { MessageError } from '@/service/message_custom';
+import { Transmit } from '@adonisjs/transmit-client';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useGatewayStore } from './stores';
-import { Transmit } from '@adonisjs/transmit-client';
 
 const { api } = useGatewayStore();
 
@@ -131,7 +131,6 @@ async function connectSourceChannel() {
 
         subscription.onMessage((data) => {
             sources.value = data;
-            console.log('Evento recebido das sources:', data);
         });
     } catch (error) {
         console.log(error.message);
@@ -171,17 +170,18 @@ function openSourceModal(source = null) {
         sourceSelected.value = source
             ? { ...source }
             : {
-                  meta: {
-                      kind: 'modbus-tcp',
-                      unitId: 1,
-                      modbusFunction: 'readHoldingRegisters',
-                      dataAddress: 0,
-                      lengthAddress: 1,
-                      format: 'float32',
-                      swapBytes: false,
-                      swapWords: false,
-                  }
-              };
+                meta: {
+                    convert: { isActive: false },
+                    kind: 'modbus-tcp',
+                    unitId: 1,
+                    modbusFunction: 'readHoldingRegisters',
+                    dataAddress: 0,
+                    lengthAddress: 1,
+                    format: 'float32',
+                    swapBytes: false,
+                    swapWords: false,
+                }
+            };
     } catch (error) {
         MessageError(error.message, 'Erro ao abrir configuração da fonte');
     }
@@ -267,7 +267,8 @@ onUnmounted(() => {
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
             <div>
-                <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">Gerenciamento de Fontes.</h1>
+                <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">Gerenciamento de Fontes.
+                </h1>
                 <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {{ sourceStats.filtered }} de {{ sourceStats.total }} fontes
                     <span v-if="lastUpdate" class="hidden sm:inline ml-2">• Atualizado às {{ lastUpdate }}</span>
@@ -309,14 +310,17 @@ onUnmounted(() => {
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <!-- Mobile filters row -->
                     <div class="flex gap-2 sm:gap-3 flex-1 sm:flex-initial">
-                        <Select v-model="searchState.kind" :options="filterOptions.kinds" option-label="label" option-value="value" placeholder="Tipo" class="flex-1 sm:w-32 text-sm" show-clear />
+                        <Select v-model="searchState.kind" :options="filterOptions.kinds" option-label="label"
+                            option-value="value" placeholder="Tipo" class="flex-1 sm:w-32 text-sm" show-clear />
 
-                        <Select v-model="searchState.status" :options="filterOptions.statuses" option-label="label" option-value="value" class="flex-1 sm:w-28 text-sm" />
+                        <Select v-model="searchState.status" :options="filterOptions.statuses" option-label="label"
+                            option-value="value" class="flex-1 sm:w-28 text-sm" />
                     </div>
 
                     <!-- Action buttons -->
                     <div class="flex gap-2">
-                        <Button severity="info" label="Atualizar" @click="performAutoUpdate" :disabled="isLoading" icon="pi pi-refresh" />
+                        <Button severity="info" label="Atualizar" @click="performAutoUpdate" :disabled="isLoading"
+                            icon="pi pi-refresh" />
                         <Button severity="secondary" label="Nova" @click="openSourceModal()" icon="pi pi-plus" />
                     </div>
                 </div>
@@ -327,18 +331,19 @@ onUnmounted(() => {
         <div class="flex-1 overflow-hidden">
             <!-- Grid View - Force grid on mobile, respect choice on desktop -->
             <div v-if="viewMode === 'grid'" class="h-full overflow-auto">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
-                    <div
-                        v-for="source in filteredAndSortedSources"
-                        :key="source.id"
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+                    <div v-for="source in filteredAndSortedSources" :key="source.id"
                         v-on:dblclick="openSourceModal(source)"
-                        class="bg-white dark:bg-surface-900/40 border border-surface-200 dark:border-surface-700 rounded-lg p-3 sm:p-4 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm transition-all cursor-pointer min-h-[120px] flex flex-col"
-                    >
+                        class="bg-white dark:bg-surface-900/40 border border-surface-200 dark:border-surface-700 rounded-lg p-3 sm:p-4 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm transition-all cursor-pointer min-h-[120px] flex flex-col">
                         <div class="flex items-center justify-between">
-                            <h3 class="font-medium text-surface-900 dark:text-surface-100 text-xs sm:text-sm mb-1 truncate flex-1" :title="source.name">
+                            <h3 class="font-medium text-surface-900 dark:text-surface-100 text-xs sm:text-sm mb-1 truncate flex-1"
+                                :title="source.name">
                                 {{ source.name }}
                             </h3>
-                            <div :class="`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${source.isActive ? 'bg-emerald-500' : 'bg-red-500'}`"></div>
+                            <div
+                                :class="`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${source.isActive ? 'bg-emerald-500' : 'bg-red-500'}`">
+                            </div>
                         </div>
 
                         <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 truncate" :title="source.description">
@@ -347,12 +352,14 @@ onUnmounted(() => {
 
                         <div class="flex items-center justify-between text-xs mt-auto">
                             <span class="font-mono text-gray-600 dark:text-gray-300 text-xs">{{ source.code }}</span>
-                            <span :class="`px-1.5 py-0.5 rounded text-xs ${source.status.isConnected ? 'text-emerald-500' : 'text-red-500'}`">
+                            <span
+                                :class="`px-1.5 py-0.5 rounded text-xs ${source.status.isConnected ? 'text-emerald-500' : 'text-red-500'}`">
                                 {{ source.status.isConnected ? 'Conectado' : 'Desconectado' }}
                             </span>
                         </div>
 
-                        <div v-if="source.meta?.kind === 'modbus-tcp'" class="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <div v-if="source.meta?.kind === 'modbus-tcp'"
+                            class="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500 dark:text-gray-400">Leitura:</span>
                                 <span class="font-mono text-xl text-blue-600 dark:text-blue-300">
@@ -368,7 +375,8 @@ onUnmounted(() => {
             <div v-else class="h-full overflow-auto hidden sm:block">
                 <div class="bg-white dark:bg-surface-900/30 overflow-hidden">
                     <!-- Table Header -->
-                    <div class="grid grid-cols-12 gap-4 px-4 py-3 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-600 text-sm font-medium text-surface-600 dark:text-surface-300">
+                    <div
+                        class="grid grid-cols-12 gap-4 px-4 py-3 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-600 text-sm font-medium text-surface-600 dark:text-surface-300">
                         <div class="col-span-2">Código</div>
                         <div class="col-span-3">Nome</div>
                         <div class="col-span-2">Descrição</div>
@@ -379,12 +387,9 @@ onUnmounted(() => {
 
                     <!-- Table Body -->
                     <div class="divide-y divide-surface-200 dark:divide-surface-700">
-                        <div
-                            v-for="source in filteredAndSortedSources"
-                            :key="source.id"
+                        <div v-for="source in filteredAndSortedSources" :key="source.id"
                             v-on:dblclick="openSourceModal(source)"
-                            class="grid grid-cols-12 gap-2 px-3 py-3 hover:bg-surface-50 dark:hover:bg-surface-700/50 cursor-pointer transition-colors items-center text-sm"
-                        >
+                            class="grid grid-cols-12 gap-2 px-3 py-3 hover:bg-surface-50 dark:hover:bg-surface-700/50 cursor-pointer transition-colors items-center text-sm">
                             <!-- Code -->
                             <div class="col-span-2">
                                 <span class="text-gray-700 dark:text-gray-300 text-xs">
@@ -408,7 +413,8 @@ onUnmounted(() => {
 
                             <!-- Type -->
                             <div class="col-span-2">
-                                <span :class="`inline-flex  rounded text-xs ${getKindColor(source.meta?.kind)} ${getKindBgColor(source.meta?.kind)}`">
+                                <span
+                                    :class="`inline-flex  rounded text-xs ${getKindColor(source.meta?.kind)} ${getKindBgColor(source.meta?.kind)}`">
                                     {{ source.meta?.kind?.toUpperCase() || 'N/A' }}
                                 </span>
                             </div>
@@ -416,7 +422,9 @@ onUnmounted(() => {
                             <!-- Status -->
                             <div class="col-span-1">
                                 <div class="flex items-center gap-2">
-                                    <div :class="`w-2 h-2 rounded-full ${source.isActive ? 'bg-emerald-500' : 'bg-red-500'}`"></div>
+                                    <div
+                                        :class="`w-2 h-2 rounded-full ${source.isActive ? 'bg-emerald-500' : 'bg-red-500'}`">
+                                    </div>
                                     <!-- <span
                                         :class="`text-xs ${source.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`">
                                         {{ source.isActive ? 'ON' : 'OFF' }}
@@ -426,7 +434,8 @@ onUnmounted(() => {
 
                             <!-- Reading -->
                             <div class="col-span-2">
-                                <span v-if="source.meta?.kind === 'modbus-tcp' && source.meta?.reading !== undefined" class="font-mono text-blue-600 dark:text-blue-400 font-medium">
+                                <span v-if="source.meta?.kind === 'modbus-tcp' && source.meta?.reading !== undefined"
+                                    class="font-mono text-blue-600 dark:text-blue-400 font-medium">
                                     {{ source.meta.reading }}
                                 </span>
                                 <span v-else class="text-gray-400 dark:text-gray-500 text-xs">-</span>
@@ -437,20 +446,26 @@ onUnmounted(() => {
             </div>
 
             <!-- Empty State -->
-            <div v-if="filteredAndSortedSources.length === 0 && !isLoading" class="flex-1 flex items-center justify-center">
+            <div v-if="filteredAndSortedSources.length === 0 && !isLoading"
+                class="flex-1 flex items-center justify-center">
                 <div class="text-center">
-                    <div class="mb-4 p-6 bg-surface-100 dark:bg-surface-700 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                    <div
+                        class="mb-4 p-6 bg-surface-100 dark:bg-surface-700 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
                         <i class="pi pi-search text-2xl text-gray-400 dark:text-gray-500"></i>
                     </div>
                     <h3 class="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">Nenhuma fonte encontrada</h3>
-                    <p class="text-gray-500 dark:text-gray-500 mb-4">Tente ajustar os filtros ou criar uma nova fonte.</p>
-                    <button @click="clearFilters" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">Limpar Filtros</button>
+                    <p class="text-gray-500 dark:text-gray-500 mb-4">Tente ajustar os filtros ou criar uma nova fonte.
+                    </p>
+                    <button @click="clearFilters"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">Limpar
+                        Filtros</button>
                 </div>
             </div>
         </div>
 
         <!-- Source Configuration Drawer -->
-        <Drawer v-model:visible="visibleSource" :header="sourceSelected.name || 'Nova Fonte'" position="right" class="!w-full sm:!w-[90vw] md:!w-[45rem] lg:!w-[50rem]" :show-close-icon="true">
+        <Drawer v-model:visible="visibleSource" :header="sourceSelected.name || 'Nova Fonte'" position="right"
+            class="!w-full sm:!w-[90vw] md:!w-[45rem] lg:!w-[50rem]" :show-close-icon="true">
             <template #container>
                 <source-create :source="sourceSelected" :servers="servers" @close-modal="handleSourceClose" />
             </template>
